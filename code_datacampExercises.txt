@@ -1,3 +1,6 @@
+—Exercises (E#) generally progress from less complex to more complex
+
+
 —E1
 SELECT cities.name AS city, countries.name AS country, region
 FROM cities
@@ -126,12 +129,98 @@ ORDER BY life_exp
 LIMIT 5;
 
 —E16
+SELECT *
+FROM economies2010
+UNION 
+SELECT *
+FROM economies2015
+ORDER BY code, year;
+
 —E17
+SELECT country_code
+FROM cities
+UNION
+SELECT code
+FROM currencies
+ORDER BY country_code;
+
 —E18
+SELECT code, year
+FROM economies
+UNION ALL
+SELECT country_code, year
+FROM populations
+ORDER BY code, year;
+
 —E19
+SELECT code, year
+FROM economies
+INTERSECT
+SELECT country_code, year
+FROM populations
+ORDER BY code, year;
+
 —E20
+SELECT name
+FROM countries
+INTERSECT
+SELECT name
+FROM cities;
+
 —E21
+SELECT name
+FROM cities
+EXCEPT
+SELECT capital
+FROM countries
+ORDER BY name;
+
 —E22
+SELECT capital
+FROM countries
+EXCEPT
+SELECT name
+FROM cities
+ORDER BY capital;
+
 —E23
+SELECT DISTINCT name
+FROM languages
+WHERE code IN
+    (SELECT code
+    FROM countries
+    WHERE region = 'Middle East')
+ORDER BY name;
+
 —E24
+SELECT code, name 
+FROM countries 
+WHERE continent = 'Oceania' AND code NOT IN
+    (SELECT code
+    FROM currencies);
+
 —E25
+SELECT c1.name
+FROM cities AS c1
+WHERE country_code IN
+    (SELECT e.code
+    FROM economies AS e
+    UNION
+    SELECT c2.code
+    FROM currencies AS c2
+    EXCEPT
+    SELECT p.country_code
+    FROM populations AS p);
+
+—E26
+—E27
+—E28
+—E29
+—E30
+—E31
+—E32
+—E33
+—E34
+—E35
+—E36
+—E37
