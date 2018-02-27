@@ -1,159 +1,137 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf340
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-\margl1440\margr1440\vieww10800\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+—E1
+SELECT cities.name AS city, countries.name AS country, region
+FROM cities
+INNER JOIN countries
+ON cities.country_code = countries.code;
 
-\f0\fs24 \cf0 \'97E1\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 SELECT cities.name AS city, countries.name AS country, region\
-FROM cities\
-INNER JOIN countries\
-ON cities.country_code = countries.code;\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 \'97E2\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 SELECT c.code AS country_code, name, year, inflation_rate\
-FROM countries AS c\
-INNER JOIN economies AS e\
-ON c.code = e.code;\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 \'97E3\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 SELECT c.code, name, region, e.year, fertility_rate, unemployment_rate\
-FROM countries AS c\
-INNER JOIN populations AS p\
-ON c.code = p.country_code\
-INNER JOIN economies AS e\
-ON c.code = e.code AND p.year = e.year;\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 \'97E4\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 SELECT c.name AS country, continent, l.name AS language, official\
-FROM countries AS c\
-INNER JOIN languages AS l\
-USING (code);\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 \'97E5\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 SELECT p1.country_code, p1.size AS size2010, p2.size AS size2015, (p2.size - p1.size) / p1.size * 100.0  AS growth_perc\
-FROM populations AS p1\
-INNER JOIN populations AS p2\
-ON p1.country_code = p2.country_code AND p1.year = p2.year - 5;\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 \'97E6\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 SELECT name, continent, code, surface_area,\
-    CASE WHEN surface_area > 2000000\
-            THEN 'large'\
-       WHEN surface_area > 350000\
-            THEN 'medium'\
-       ELSE 'small' END \
-       AS geosize_group\
-FROM countries;\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 \'97E7\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 SELECT country_code, size,\
-    CASE WHEN size > 50000000\
-        THEN 'large'\
-    WHEN size > 1000000\
-        THEN 'medium'\
-    ELSE 'small' END \
-    AS popsize_group\
-INTO pop_plus\
-FROM populations\
-WHERE year = 2015;\
-\
-SELECT name, continent, geosize_group, popsize_group\
-FROM countries_plus AS c\
-INNER JOIN pop_plus AS p\
-ON p.country_code = c.code\
-ORDER BY geosize_group DESC;\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 \'97E8\
-SELECT c.name AS country, local_name, l.name AS language, percent\
-FROM countries AS c\
-LEFT JOIN languages AS l\
-ON c.code = l.code\
-ORDER BY country DESC;\
-\
-\'97E9\
-SELECT region, AVG(gdp_percapita) AS avg_gdp\
-FROM countries AS c\
-LEFT JOIN economies AS e\
-ON c.code = e.code\
-WHERE year = 2010\
-GROUP BY region\
-ORDER BY avg_gdp DESC;\
-\
-\'97E10\
-SELECT cities.name AS city, urbanarea_pop, countries.name AS country,\
-       indep_year, languages.name AS language, percent\
-FROM languages \
-RIGHT JOIN countries \
-ON languages.code = countries.code\
-RIGHT JOIN cities \
-ON countries.code = cities.country_code\
-ORDER BY city, language;\
-\
-\'97E11\
-SELECT name AS country, code, region, basic_unit\
-FROM countries\
-FULL JOIN currencies\
-USING (code)\
-WHERE region = 'North America' OR region IS NULL\
-ORDER BY region;\
-\
-\'97E12\
-SELECT countries.name, code, languages.name AS language\
-FROM languages\
-FULL JOIN countries\
-USING (code)\
-WHERE countries.name LIKE 'V%' OR countries.name IS NULL\
-ORDER BY countries.name;\
-\
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 \'97E13\
-SELECT c1.name AS country, region, l.name AS language,\
-       basic_unit, frac_unit\
-FROM countries AS c1\
-FULL JOIN languages AS l\
-USING (code)\
-FULL JOIN currencies AS c2\
-USING (code)\
-WHERE region LIKE 'M%esia';\
-\
-\'97E14\
-SELECT c.name AS city, l.name AS language\
-FROM cities AS c\
-CROSS JOIN languages AS l\
-WHERE c.name LIKE 'Hyder%\'92;\
-\
-\'97E15\
-SELECT name AS country, region, life_expectancy AS life_exp\
-FROM countries \
-LEFT JOIN populations\
-ON countries.code = populations.country_code\
-WHERE year = 2010\
-ORDER BY life_exp\
-LIMIT 5;\
-\
-\'97E16\
-\'97E17\
-\'97E18\
-\'97E19\
-\'97E20\
-\'97E21\
-\'97E22\
-\'97E23\
-\'97E24\
-\'97E25\
-}
+—E2
+SELECT c.code AS country_code, name, year, inflation_rate
+FROM countries AS c
+INNER JOIN economies AS e
+ON c.code = e.code;
+
+—E3
+SELECT c.code, name, region, e.year, fertility_rate, unemployment_rate
+FROM countries AS c
+INNER JOIN populations AS p
+ON c.code = p.country_code
+INNER JOIN economies AS e
+ON c.code = e.code AND p.year = e.year;
+
+—E4
+SELECT c.name AS country, continent, l.name AS language, official
+FROM countries AS c
+INNER JOIN languages AS l
+USING (code);
+
+—E5
+SELECT p1.country_code, p1.size AS size2010, p2.size AS size2015, (p2.size - p1.size) / p1.size * 100.0  AS growth_perc
+FROM populations AS p1
+INNER JOIN populations AS p2
+ON p1.country_code = p2.country_code AND p1.year = p2.year - 5;
+
+—E6
+SELECT name, continent, code, surface_area,
+    CASE WHEN surface_area > 2000000
+            THEN 'large'
+       WHEN surface_area > 350000
+            THEN 'medium'
+       ELSE 'small' END 
+       AS geosize_group
+FROM countries;
+
+—E7
+SELECT country_code, size,
+    CASE WHEN size > 50000000
+        THEN 'large'
+    WHEN size > 1000000
+        THEN 'medium'
+    ELSE 'small' END 
+    AS popsize_group
+INTO pop_plus
+FROM populations
+WHERE year = 2015;
+
+SELECT name, continent, geosize_group, popsize_group
+FROM countries_plus AS c
+INNER JOIN pop_plus AS p
+ON p.country_code = c.code
+ORDER BY geosize_group DESC;
+
+—E8
+SELECT c.name AS country, local_name, l.name AS language, percent
+FROM countries AS c
+LEFT JOIN languages AS l
+ON c.code = l.code
+ORDER BY country DESC;
+
+—E9
+SELECT region, AVG(gdp_percapita) AS avg_gdp
+FROM countries AS c
+LEFT JOIN economies AS e
+ON c.code = e.code
+WHERE year = 2010
+GROUP BY region
+ORDER BY avg_gdp DESC;
+
+—E10
+SELECT cities.name AS city, urbanarea_pop, countries.name AS country,
+       indep_year, languages.name AS language, percent
+FROM languages 
+RIGHT JOIN countries 
+ON languages.code = countries.code
+RIGHT JOIN cities 
+ON countries.code = cities.country_code
+ORDER BY city, language;
+
+—E11
+SELECT name AS country, code, region, basic_unit
+FROM countries
+FULL JOIN currencies
+USING (code)
+WHERE region = 'North America' OR region IS NULL
+ORDER BY region;
+
+—E12
+SELECT countries.name, code, languages.name AS language
+FROM languages
+FULL JOIN countries
+USING (code)
+WHERE countries.name LIKE 'V%' OR countries.name IS NULL
+ORDER BY countries.name;
+
+—E13
+SELECT c1.name AS country, region, l.name AS language,
+       basic_unit, frac_unit
+FROM countries AS c1
+FULL JOIN languages AS l
+USING (code)
+FULL JOIN currencies AS c2
+USING (code)
+WHERE region LIKE 'M%esia';
+
+—E14
+SELECT c.name AS city, l.name AS language
+FROM cities AS c
+CROSS JOIN languages AS l
+WHERE c.name LIKE 'Hyder%’;
+
+—E15
+SELECT name AS country, region, life_expectancy AS life_exp
+FROM countries 
+LEFT JOIN populations
+ON countries.code = populations.country_code
+WHERE year = 2010
+ORDER BY life_exp
+LIMIT 5;
+
+—E16
+—E17
+—E18
+—E19
+—E20
+—E21
+—E22
+—E23
+—E24
+—E25
