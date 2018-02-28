@@ -1,0 +1,98 @@
+—Stanford “Databases: SQL” - Homework Set 1
+
+—E1
+SELECT title
+FROM Movie
+WHERE director = 'Steven Spielberg';
+
+—E2
+SELECT DISTINCT year 
+FROM Movie
+LEFT JOIN Rating
+USING (mID)
+WHERE stars >= 4
+ORDER BY year;
+
+—E3
+SELECT title
+FROM Movie
+WHERE mID IN 
+	(SELECT mID
+	FROM Movie
+	EXCEPT
+	SELECT mID
+	FROM Rating);
+
+—E4
+SELECT DISTINCT name
+FROM Reviewer
+INNER JOIN Rating
+USING (rID)
+WHERE ratingDate IS NULL
+
+—E5
+SELECT name, title, stars, ratingDate
+FROM Rating
+LEFT JOIN Reviewer
+USING (rID)
+LEFT JOIN Movie
+USING (mID)
+ORDER BY name, title, stars
+
+—E6
+SELECT name, title
+FROM Reviewer, Movie
+WHERE     
+    rID IN 
+        (SELECT R1.rID
+        FROM Rating AS R1 JOIN Rating AS R2
+        ON R1.rID = R2.rID AND R1.mID = R2.mID
+        WHERE R2.ratingDate > R1.RatingDate AND R2.stars > R1.stars)    
+    AND mID IN
+        (SELECT R1.mID
+        FROM Rating AS R1 JOIN Rating AS R2
+        ON R1.rID = R2.rID AND R1.mID = R2.mID
+        WHERE R2.ratingDate > R1.RatingDate AND R2.stars > R1.stars)
+
+—E7
+SELECT title, stars
+FROM
+    (SELECT DISTINCT R1.mID, MAX(R1.stars) AS stars
+    FROM Rating AS R1
+    INNER JOIN Rating AS R2
+    ON R1.mID = R2.mID
+    WHERE R1.stars >= R2.stars
+    GROUP BY R1.mID) AS master
+JOIN Movie
+ON master.mID = Movie.mID
+ORDER BY title
+
+—E8
+SELECT title, rating_spread
+FROM
+    (SELECT mID, MAX(stars) - MIN(stars) AS rating_spread
+    FROM Rating
+    GROUP BY mID) AS master
+JOIN Movie
+ON master.mID = Movie.mID
+ORDER BY rating_spread DESC, title
+
+—E9
+SELECT AVG(t1.avg) - AVG(t2.avg)
+FROM
+    (SELECT Movie.mID, avg, year
+    FROM
+        (SELECT AVG(stars) AS avg, mID
+        FROM Rating
+        GROUP BY mID)
+    JOIN Movie
+    USING (mID)
+    WHERE year >= 1980) AS t2,
+    (SELECT Movie.mID, avg, year
+    FROM
+        (SELECT AVG(stars) AS avg, mID
+        FROM Rating
+        GROUP BY mID)
+    JOIN Movie
+    USING (mID)
+    WHERE year < 1980) AS t1
