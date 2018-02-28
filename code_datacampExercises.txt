@@ -1,5 +1,4 @@
-—Exercises (E#) generally progress from less complex to more complex
-
+—Exercises (E#) become progressively more complex. Covers basic SQL, joins, set operations, subqueries, aggregators, and more. 
 
 —E1
 SELECT cities.name AS city, countries.name AS country, region
@@ -213,14 +212,104 @@ WHERE country_code IN
     FROM populations AS p);
 
 —E26
+SELECT *
+FROM populations
+WHERE life_expectancy > 
+    1.15 * (SELECT AVG(life_expectancy)
+    FROM populations
+    WHERE year = 2015) AND
+    year = 2015
+
 —E27
+SELECT name, country_code, urbanarea_pop
+FROM cities
+WHERE name IN
+  (SELECT capital
+   FROM countries)
+ORDER BY urbanarea_pop DESC;
+
 —E28
+SELECT countries.name AS country, COUNT(*) AS cities_num
+FROM cities
+INNER JOIN countries
+ON countries.code = cities.country_code
+GROUP BY country
+ORDER BY cities_num DESC, country
+LIMIT 9;
+
+SELECT countries.name AS country,
+  (SELECT COUNT(*)
+   FROM cities
+   WHERE countries.code = cities.country_code) AS cities_num
+FROM countries
+ORDER BY cities_num DESC, country
+LIMIT 9;
+
 —E29
+SELECT countries.local_name, subquery.lang_num
+FROM countries, 
+    (SELECT code, COUNT (*) AS lang_num
+    FROM languages
+    GROUP BY code) AS subquery
+WHERE countries.code = subquery.code
+ORDER BY subquery.lang_num DESC;
+
 —E30
+SELECT name, continent, inflation_rate
+FROM countries
+INNER JOIN economies 
+ON countries.code = economies.code
+WHERE year = 2015 
+    AND inflation_rate IN 
+        (SELECT MAX(inflation_rate) AS max_inf
+        FROM (
+            SELECT continent, inflation_rate 
+            FROM countries
+            INNER JOIN economies
+            ON countries.code = economies.code
+            WHERE year = 2015) AS subquery
+        GROUP BY continent);
+
 —E31
+SELECT economies.code, inflation_rate, unemployment_rate
+FROM economies
+WHERE year = 2015 AND economies.code NOT IN
+  (SELECT code
+   FROM countries
+   WHERE (gov_form LIKE 'Constitutional Monarchy' OR gov_form LIKE '%Republic%')) 
+ORDER BY inflation_rate;
+
 —E32
+SELECT DISTINCT name, total_investment, imports
+FROM countries AS c
+LEFT JOIN economies AS e
+ON c.code = e.code 
+WHERE year = 2015 AND c.code IN
+    (SELECT l.code
+    FROM languages AS l
+    WHERE official = 'true' AND l.code IN 
+        (SELECT code 
+        FROM countries
+        WHERE region = 'Central America')
+        );
 —E33
+SELECT region, continent, AVG(fertility_rate) AS avg_fert_rate
+FROM countries AS c
+INNER JOIN populations AS p
+ON c.code = p.country_code
+WHERE year = 2015
+GROUP BY region, continent
+ORDER BY avg_fert_rate
+
 —E34
-—E35
-—E36
-—E37
+SELECT name, country_code, city_proper_pop, metroarea_pop,  
+      city_proper_pop / metroarea_pop * 100.0 AS city_perc
+FROM cities
+WHERE name IN
+  (SELECT capital
+   FROM countries
+   WHERE (continent = 'Europe'
+      OR continent LIKE '%America'))
+    AND metroarea_pop IS NOT NULL
+ORDER BY city_perc DESC
+
