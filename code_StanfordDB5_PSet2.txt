@@ -1,0 +1,101 @@
+—Stanford “Databases: SQL” - Homework Set 2
+
+—E1
+SELECT name
+FROM Highschooler
+WHERE ID IN
+    (SELECT DISTINCT ID1
+    FROM Friend
+    JOIN Highschooler
+    ON Friend.ID2 = Highschooler.ID
+    WHERE name = 'Gabriel’)
+
+—E2
+SELECT LikesID1.name, LikesID1.grade, LikesID2.name, LikesID2.grade
+FROM Likes,
+    (SELECT *
+    FROM Likes
+    JOIN Highschooler
+    ON ID1 = ID) AS LikesID1,
+    (SELECT *
+    FROM Likes
+    Join Highschooler
+    ON ID2 = ID) AS LikesID2
+WHERE LikesID1.ID1 = Likes.ID1 AND LikesID2.ID2 = Likes.ID2 AND 
+    (LikesID1.grade - LikesID2.grade) >= 2
+
+—E3
+SELECT H1.name, H1.grade, H2.name, H2.grade  
+FROM Likes AS L1, Likes AS L2, Highschooler AS H1, Highschooler AS H2
+Where L1.ID1=L2.ID2 
+AND L2.ID1=L1.ID2 
+AND L1.ID1=H1.ID 
+AND L1.ID2=H2.ID 
+AND H1.name < H2.name;
+
+—E4
+SELECT name, grade
+FROM Highschooler
+WHERE ID NOT IN
+    (SELECT ID1
+    FROM Likes
+    UNION
+    SELECT ID2
+    FROM Likes)
+ ORDER BY grade, name
+
+—E5
+SELECT H1.name, H1.grade, H2.name, H2.grade
+FROM (SELECT ID1, ID2
+    FROM Likes 
+    WHERE ID2 IN
+        (SELECT ID2
+         FROM Likes
+         EXCEPT
+         SELECT ID1
+         FROM Likes)) 
+JOIN Highschooler AS H1
+ON ID1 = H1.ID
+JOIN Highschooler AS H2
+ON ID2 = H2.ID
+
+—E6
+SELECT DISTINCT H1.name, H1.grade
+FROM Friend
+JOIN Highschooler AS H1 ON ID1 = H1.ID
+JOIN Highschooler AS H2 ON ID2 = H2.ID
+WHERE H1.grade = H2.grade 
+AND H1.ID NOT IN
+    (SELECT H1.ID
+    FROM Friend
+    JOIN Highschooler AS H1 ON ID1 = H1.ID
+    JOIN Highschooler AS H2 ON ID2 = H2.ID
+    WHERE H1.grade <> H2.grade) 
+ORDER BY H1.grade, H1.name
+
+—E7
+SELECT H1.name, H1.grade, H2.name, H2.grade, H3.name, H3.grade
+FROM Highschooler AS H1, Highschooler AS H2, Highschooler AS H3, Likes, Friend AS F1, Friend AS F2
+WHERE H1.ID = Likes.ID1 
+AND H2.ID = Likes.ID2 
+AND F1.ID1 = H1.ID 
+AND F1.ID2 = H3.ID 
+AND F2.ID1 = H2.ID
+AND F2.ID2 = H3.ID
+AND H1.ID NOT IN
+    (SELECT Friend.ID1
+    FROM Friend
+    WHERE Friend.ID2 = H2.ID)
+
+—E8
+SELECT COUNT(DISTINCT ID) - COUNT(DISTINCT name)
+FROM Highschooler
+
+—E9
+SELECT name, grade
+FROM Highschooler
+WHERE ID IN
+    (SELECT ID2
+    FROM Likes
+    GROUP BY ID2
+    HAVING COUNT(*) > 1)

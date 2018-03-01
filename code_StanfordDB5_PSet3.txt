@@ -1,0 +1,26 @@
+—Stanford “Databases: SQL” - Homework Set 4 (Data modification)
+
+—E1
+INSERT INTO Reviewer 
+VALUES ('209','Roger Ebert');
+
+—E2
+INSERT INTO Rating
+SELECT 207, Movie.mID, 5, null
+FROM Movie
+
+—E3
+UPDATE Movie
+SET year = year + 25
+WHERE mID IN
+    (SELECT mID
+    FROM Rating
+    GROUP BY mID
+    HAVING AVG(stars) >= 4)
+
+—E4
+DELETE FROM Rating
+WHERE stars < 4 AND mID NOT IN
+    (SELECT mID
+    FROM Movie
+    WHERE year > 1969 AND year < 2001)

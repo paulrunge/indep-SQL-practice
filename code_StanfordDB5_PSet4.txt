@@ -1,0 +1,17 @@
+—Stanford “Databases: SQL” - Homework Set 4
+
+—E1
+DELETE FROM Highschooler
+WHERE grade = 12 
+
+—E2
+DELETE FROM Likes
+WHERE ID1 IN
+    (SELECT Friend.ID1
+    FROM Friend, Likes
+    WHERE Friend.ID1 = Likes.ID1 AND Friend.ID2 = Likes.ID2)
+AND ID2 NOT IN
+    (SELECT Friend.ID2
+    FROM Friend, Likes
+    WHERE Friend.ID2 = Likes.ID1 AND Friend.ID1 = Likes.ID2)
+
